@@ -1,0 +1,148 @@
+
+<%inherit file="/base.htm"/>
+<%block name='head'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>配置管理系统-缓存服务</title>
+	<meta name="description" content=""/>
+    <meta name="author" content=""/>
+	<link rel="shortcut icon" href="${STATIC_URL}favicon.ico" type="image/x-icon">
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->  
+	 
+
+	<link href="${STATIC_URL}backend/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/plugins/iCheck/custom.css" rel="stylesheet">
+	<link href="${STATIC_URL}backend/css/plugins/chosen/chosen.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="${STATIC_URL}backend/css/formSelects-v4.css" />
+	
+	<link href="${STATIC_URL}backend/css/font-awesome.min.css?v=4.4.0" rel="stylesheet"> 
+	
+    <link href="${STATIC_URL}backend/css/animate.css" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/style.css?v=4.1.0" rel="stylesheet"> 
+	<link href="${STATIC_URL}backend/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet"> 
+
+</%block>
+
+<%block name="content"> 
+<div class="wrapper wrapper-content animated fadeIn">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="tabs-container">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true">七牛CDN</a>
+                        </li>
+                        <li class=""><a data-toggle="tab" href="#tab-2" aria-expanded="false">云端智度CDN</a>
+                        </li>
+                    </ul>
+                    <div class="tab-content">
+                        <div id="tab-1" class="tab-pane active">
+                            <div class="panel-body">
+                                  <div class="ibox float-e-margins"> 
+										<div class="ibox-content">
+											<div class="row">
+												<div class="col-sm-12">
+												   
+													<form method="post" action="##" id="qiniu">
+														<div class="form-group">
+															<label>七牛缓存清理</label>
+															<input type="url" placeholder="请输入您要清理的url" name="url" class="form-control">
+														</div> 
+														<div>
+															<button class="btn btn-sm btn-primary pull-right m-t-n-xs" type="button"  id="qiniuBtn"><strong>提交</strong>
+															</button> 
+														</div>
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>	
+                            </div>
+                        </div>
+                        <div id="tab-2" class="tab-pane">
+                            <div class="panel-body">
+							      <div class="ibox float-e-margins"> 
+										<div class="ibox-content">
+											<div class="row">
+												<div class="col-sm-12">
+													<form  method="post" action="##" id="yun" >
+														<div class="form-group">
+															<label>云端缓存清理</label>
+															<input type="url" placeholder="请输入您要清理的url"  name="url" class="form-control">
+														</div> 
+														<div>
+															<button class="btn btn-sm btn-primary pull-right m-t-n-xs" type="button" id="yunBtn"><strong>提交</strong>
+															</button> 
+														</div>
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>	
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	<%block name='JS'> 
+	   <!-- 全局js -->
+		<script src="${STATIC_URL}backend/js/jquery.min.js?v=2.1.4"></script>
+		<script src="${STATIC_URL}backend/js/bootstrap.min.js?v=3.3.6"></script> 
+		<!-- 自定义js -->
+		<script src="${STATIC_URL}backend/js/content.js?v=1.0.0"></script>
+		<!-- layer javascript -->
+		<script src="${STATIC_URL}backend/js/plugins/layer/layer.min.js"></script> 
+		<script src="${STATIC_URL}js/csrftoken.js"></script>
+		<!-- submit -->
+		<script type="text/javascript">
+		$('#qiniuBtn').on('click', function(){
+				    $.ajax({
+					    type: "POST",
+						dataType: "json",
+						url: "${SITE_URL}api/v1/cache/qiniu",
+						data: $('#qiniu').serialize(),
+						success: function (result) {
+						    console.log(result);
+						    if (result.resultCode == 200) {
+							   layer.msg(result.info); 
+							   setTimeout("window.parent.location.reload();",500);	
+							}
+							else{
+							    layer.msg(result.info);
+							};
+						},
+						error: function() {
+							 layer.msg(result.info); 	
+						 }
+					});
+				}) 
+
+        $('#yunBtn').on('click', function(){
+				    $.ajax({
+					    type: "POST",
+						dataType: "json",
+						url: "${SITE_URL}api/v1/cache/yun",
+						data: $('#yun').serialize(),
+						success: function (result) {
+						    console.log(result);
+						    if (result.resultCode == 200) {
+							   layer.msg(result.info); 
+							   setTimeout("window.parent.location.reload();",500);	
+							}
+							else{
+							    layer.msg(result.info);
+							};
+						},
+						error: function() {
+							 layer.msg(result.info); 	
+						 }
+					});
+				}) 				
+		</script>
+		
+		
+	</%block> 	
+	 
+</%block> 

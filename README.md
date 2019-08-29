@@ -1,2 +1,3 @@
-# configmanager
-基于confd的配置管理系统
+# confd-web
+
+基于蓝鲸框架，开发的confd配置管理中心

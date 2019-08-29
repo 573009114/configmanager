@@ -1,0 +1,74 @@
+
+<%inherit file="/base.htm"/>
+<%block name='head'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>运维服务系统-缓存服务</title>
+	<meta name="description" content=""/>
+    <meta name="author" content=""/>
+	<link rel="shortcut icon" href="${STATIC_URL}favicon.ico" type="image/x-icon">
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->  
+	 
+
+	<link href="${STATIC_URL}backend/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/plugins/iCheck/custom.css" rel="stylesheet">
+	<link href="${STATIC_URL}backend/css/plugins/chosen/chosen.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="${STATIC_URL}backend/css/formSelects-v4.css" />
+	<link href="${STATIC_URL}backend/css/plugins/switchery/switchery.css" rel="stylesheet"> 
+	
+	<link href="${STATIC_URL}backend/css/font-awesome.min.css?v=4.4.0" rel="stylesheet"> 
+	
+    <link href="${STATIC_URL}backend/css/animate.css" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/style.css?v=4.1.0" rel="stylesheet"> 
+	<link href="${STATIC_URL}backend/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet"> 
+
+</%block>
+
+<%block name="content"> 
+<div class="wrapper wrapper-content animated fadeIn">
+		<div class="row"> 
+            <div class="col-sm-12">
+              
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>发布开关</h5> 
+                    </div>
+                    <div class="ibox-content"> 
+					    <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>业务</th>
+                                    <th>描述</th>
+                                    <th>操作</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>1</td>
+                                    <td>touchweb</td>
+                                    <td>触屏发布机</td>
+                                    <td><input type="checkbox" class="js-switch" checked /> </td>
+                                </tr> 
+                            </tbody>
+                        </table>
+                    </div>
+                </div> 
+            </div>
+        </div>
+</div>
+	<%block name='JS'> 	
+    <!-- 全局js -->
+    <script src="${STATIC_URL}backend/js/jquery.min.js?v=2.1.4"></script>
+    <script src="${STATIC_URL}backend/js/bootstrap.min.js?v=3.3.6"></script>  
+    <!-- Data picker -->
+    <script src="${STATIC_URL}backend/js/plugins/datapicker/bootstrap-datepicker.js"></script> 
+    <!-- Switchery -->
+    <script src="${STATIC_URL}backend/js/plugins/switchery/switchery.js"></script> 
+    <!-- Image cropper -->
+    <script src="${STATIC_URL}backend/js/plugins/cropper/cropper.min.js"></script>
+
+    <script src="${STATIC_URL}backend/js/demo/form-advanced-demo.js"></script>
+	 </%block>
+</%block> 

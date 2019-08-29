@@ -1,0 +1,175 @@
+<%inherit file="/base.htm"/>
+<%block name='head'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>Confd配置管理中心</title>
+	<meta name="description" content=""/>
+    <meta name="author" content=""/>
+	<link rel="shortcut icon" href="${STATIC_URL}favicon.ico" type="image/x-icon">
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->  
+	 
+
+	<link href="${STATIC_URL}backend/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/plugins/iCheck/custom.css" rel="stylesheet">
+	<link href="${STATIC_URL}backend/css/plugins/chosen/chosen.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="${STATIC_URL}backend/css/formSelects-v4.css" />
+	
+	<link href="${STATIC_URL}backend/css/font-awesome.min.css?v=4.4.0" rel="stylesheet"> 
+	<link href="${STATIC_URL}backend/css/plugins/steps/jquery.steps.css" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/animate.css" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/style.css?v=4.1.0" rel="stylesheet"> 
+    <link href="${STATIC_URL}backend/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+	
+	
+
+</%block>
+<%block name="content">
+    <div class="wrapper wrapper-content animated fadeInRight">
+        <div class="row"> 
+            <div class="col-sm-12">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>指引向导</h5> 
+                    </div>
+                    <div class="ibox-content">
+                        
+                        <div id="wizard">
+                            <h1>第一步</h1>
+                            <div class="step-content">
+                                <div class="text-center m-t-md">
+                                    <h2>第一步</h2>
+                                    <p>
+                                         <img src="${STATIC_URL}backend/img/step/step1.png" style="width:600px;" > 
+                                    </p>
+                                </div>
+                            </div>
+
+                            <h1>第二步</h1>
+                            <div class="step-content">
+                                <div class="text-center m-t-md">
+                                    <h2>第二步</h2>
+                                    <p>
+                                        <img src="${STATIC_URL}backend/img/step/step2.png" style="width:600px;"> 
+                                    </p>
+                                </div>
+                            </div>
+
+                            <h1>第三步</h1>
+                            <div class="step-content">
+                                <div class="text-center m-t-md">
+                                    <h2>第三步</h2>
+                                    <p>
+                                        <img src="${STATIC_URL}backend/img/step/step3.png" style="width:600px;" > 
+                                    </p>
+                                </div>
+                            </div>
+							
+							<h1>第四步</h1>
+                            <div class="step-content">
+                                <div class="text-center m-t-md">
+                                    <h2>第四步</h2>
+                                    <p>
+                                        <img src="${STATIC_URL}backend/img/step/step4.png" style="width:600px;" > 
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+    </div>
+    <%block name='JS'> 
+    <!-- 全局js -->
+    <script src="${STATIC_URL}backend/js/jquery.min.js?v=2.1.4"></script>
+    <script src="${STATIC_URL}backend/js/bootstrap.min.js?v=3.3.6"></script>
+
+
+
+    <!-- 自定义js -->
+   <script src="${STATIC_URL}backend/js/content.js?v=1.0.0"></script>
+
+
+    <!-- Steps -->
+    <script src="${STATIC_URL}backend/js/plugins/staps/jquery.steps.min.js"></script>
+
+    <!-- Jquery Validate -->
+   <script src="${STATIC_URL}backend/js/plugins/validate/jquery.validate.min.js"></script>
+   <script src="${STATIC_URL}backend/js/plugins/validate/messages_zh.min.js"></script>
+
+
+    <script>
+        $(document).ready(function () {
+            $("#wizard").steps();
+            $("#form").steps({
+                bodyTag: "fieldset",
+                onStepChanging: function (event, currentIndex, newIndex) {
+                    // Always allow going backward even if the current step contains invalid fields!
+                    if (currentIndex > newIndex) {
+                        return true;
+                    }
+
+                    // Forbid suppressing "Warning" step if the user is to young
+                    if (newIndex === 3 && Number($("#age").val()) < 18) {
+                        return false;
+                    }
+
+                    var form = $(this);
+
+                    // Clean up if user went backward before
+                    if (currentIndex < newIndex) {
+                        // To remove error styles
+                        $(".body:eq(" + newIndex + ") label.error", form).remove();
+                        $(".body:eq(" + newIndex + ") .error", form).removeClass("error");
+                    }
+
+                    // Disable validation on fields that are disabled or hidden.
+                    form.validate().settings.ignore = ":disabled,:hidden";
+
+                    // Start validation; Prevent going forward if false
+                    return form.valid();
+                },
+                onStepChanged: function (event, currentIndex, priorIndex) {
+                    // Suppress (skip) "Warning" step if the user is old enough.
+                    if (currentIndex === 2 && Number($("#age").val()) >= 18) {
+                        $(this).steps("next");
+                    }
+
+                    // Suppress (skip) "Warning" step if the user is old enough and wants to the previous step.
+                    if (currentIndex === 2 && priorIndex === 3) {
+                        $(this).steps("previous");
+                    }
+                },
+                onFinishing: function (event, currentIndex) {
+                    var form = $(this);
+
+                    // Disable validation on fields that are disabled.
+                    // At this point it's recommended to do an overall check (mean ignoring only disabled fields)
+                    form.validate().settings.ignore = ":disabled";
+
+                    // Start validation; Prevent form submission if false
+                    return form.valid();
+                },
+                onFinished: function (event, currentIndex) {
+                    var form = $(this);
+
+                    // Submit form input
+                    form.submit();
+                }
+            }).validate({
+                errorPlacement: function (error, element) {
+                    element.before(error);
+                },
+                rules: {
+                    confirm: {
+                        equalTo: "#password"
+                    }
+                }
+            });
+        });
+    </script>
+	</%block>
+</%block>

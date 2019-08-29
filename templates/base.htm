@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html>
+  <head>
+  
+  <%block name='head'>
+  
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>配置管理系统</title>
+	<meta name="description" content=""/>
+    <meta name="author" content=""/>
+	<link rel="shortcut icon" href="${STATIC_URL}favicon.ico" type="image/x-icon">
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->
+ 
+    <link href="${STATIC_URL}backend/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+	<link href="${STATIC_URL}backend/css/font-awesome.min.css?v=4.4.0" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/animate.css" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/style.css?v=4.1.0" rel="stylesheet">
+	<!-- project -->
+	<link href="${STATIC_URL}backend/css/plugins/treeview/bootstrap-treeview.css" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/plugins/codemirror/codemirror.css" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/plugins/codemirror/ambiance.css" rel="stylesheet">
+    <!-- server -->
+	<link href="${STATIC_URL}backend/css/plugins/chosen/chosen.css" rel="stylesheet">
+	<link href="${STATIC_URL}backend/css/plugins/iCheck/custom.css" rel="stylesheet">
+ 
+	
+  </%block>  
+  </head> 
+  
+  <body class="fixed-sidebar full-height-layout gray-bg" style="overflow:hidden">
+    <div id="wrapper">
+		<!--左侧导航开始-->
+        <nav class="navbar-default navbar-static-side" role="navigation"> 
+            <div class="nav-close"><i class="fa fa-times-circle"></i>
+            </div>
+            <div class="sidebar-collapse">
+                <ul class="nav" id="side-menu">
+                    <li class="nav-header">
+                        <div class="dropdown profile-element">
+                            <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                                <span class="clear">
+                                    <span class="block m-t-xs" style="font-size:20px;">
+                                        <!-- <i class="fa fa-area-chart"></i> -->
+                                        <img src="${STATIC_URL}backend/img/logo.png">
+                                        <strong class="font-bold">配置管理系统</strong>
+                                    </span>
+                                </span>
+                            </a>
+                        </div>
+                        <div class="logo-element">运维
+                        </div>
+                    </li>
+                    <li class="hidden-folded padder m-t m-b-sm text-muted text-xs">
+                        <span class="ng-scope"><!--分类--></span>
+                    </li>  
+					<li>
+                        <a href="#">
+                            <i class="fa fa-home"></i>
+                            <span class="nav-label">主页</span>
+                            <span class="fa arrow"></span>
+                        </a>
+                        <ul class="nav nav-second-level">
+                            <li>
+                                <a class="J_menuItem" href="${SITE_URL}">仪表盘</a>
+                            </li>
+                        </ul>
+                    </li> 
+					% if perms:
+                    <li>
+                        <a href=""><i class="fa fa-picture-o"></i> <span class="nav-label">业务管理</span><span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level"> 
+                            <li><a class="J_menuItem" href="${SITE_URL}project-list/">配置发布</a></li>
+							<li><a class="J_menuItem" href="${SITE_URL}group-list/">业务组维护</a></li>							
+                        </ul>
+                    </li> 
+					% endif
+					<!-- <li>
+                        <a href=""><i class="fa fa-table"></i> <span class="nav-label">缓存管理</span><span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                            <li><a class="J_menuItem" href="${SITE_URL}cache/other">第三方服务</a></li>
+                        </ul>
+                    </li>  -->
+					<!-- <li>
+                        <a href=""><i class="fa fa-desktop"></i> <span class="nav-label">发布控制</span><span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                            <li><a class="J_menuItem" href="${SITE_URL}rsync/switch">同步开关</a></li>
+                        </ul>
+                    </li>  -->
+					% if perms:
+					<li>
+                        <a href=""><i class="fa fa-cutlery"></i> <span class="nav-label">用户设置</span><span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level">
+                            <li><a class="J_menuItem" href="${SITE_URL}user/authorize">权限控制</a></li>
+                        </ul>
+                    </li> 
+					% endif
+                </ul>
+            </div>
+        </nav>
+        <!--左侧导航结束--> 
+		<!--右侧部分开始-->
+        <div id="page-wrapper" class="gray-bg dashbard-1">
+            <div class="row border-bottom">
+                <nav class="navbar navbar-static-top" role="navigation" style="margin-bottom: 0">
+                    <div class="navbar-header"><a class="navbar-minimalize minimalize-styl-2 btn btn-info " href="#"><i class="fa fa-bars"></i> </a>
+                        <form role="search" class="navbar-form-custom" method="post" action="search_results.html">
+                            <div class="form-group">
+                                <input type="text" placeholder="请输入您需要查找的内容 …" class="form-control" name="top-search" id="top-search">
+                            </div>
+                        </form>
+                    </div> 
+						<ul class="nav navbar-top-links navbar-right">
+							<li class="dropdown">
+								<a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+									<i class="fa fa-user"></i>
+								</a>
+								<ul class="dropdown-menu" style="width:140px;">
+									<li>
+										<a id="logout" href="${LOGOUT_URL}"><i class="fa fa-qq fa-fw"></i>${request.user.username}注销</a>
+									</li>
+								</ul>
+							</li>
+						</ul> 
+                </nav>
+            </div>
+		
+			<!--引用默认首页部分-->
+            <div class="row J_mainContent" id="content-main">				
+				<!-- 固定宽度居中 start -->
+				<%block name='content'></%block>				
+				<!-- 固定宽度表单居中 end -->
+            </div>
+        </div>
+        <!--右侧部分结束-->  
+    </div>
+    <%block name='JS'>
+	<!-- 全局js -->
+	<script src="${STATIC_URL}backend/js/jquery.min.js?v=2.1.4"></script>
+	<script src="${STATIC_URL}backend/js/bootstrap.min.js?v=3.3.6"></script>
+	<script src="${STATIC_URL}backend/js/plugins/metisMenu/jquery.metisMenu.js"></script>		
+	<!-- 自定义js -->
+	<script src="${STATIC_URL}backend/js/content.js?v=1.0.0"></script>
+
+	<!-- CodeMirror -->
+	<script src="${STATIC_URL}backend/js/plugins/codemirror/codemirror.js"></script>
+	<script src="${STATIC_URL}backend/js/plugins/codemirror/mode/javascript/javascript.js"></script>
+
+	<!-- Bootstrap-Treeview plugin javascript -->
+	<script src="${STATIC_URL}backend/js/plugins/treeview/bootstrap-treeview.js"></script>
+	<script src="${STATIC_URL}backend/js/demo/treeview-demo.js"></script>	
+	</%block>
+     
+  </body>
+  
+</html>
+  

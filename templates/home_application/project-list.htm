@@ -1,0 +1,325 @@
+
+<%inherit file="/base.htm"/>
+<%block name='head'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>配置管理系统-项目列表</title>
+	<meta name="description" content=""/>
+    <meta name="author" content=""/>
+	<link rel="shortcut icon" href="${STATIC_URL}favicon.ico" type="image/x-icon">
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->  
+	 
+
+	<link href="${STATIC_URL}backend/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/plugins/iCheck/custom.css" rel="stylesheet">
+	<link href="${STATIC_URL}backend/css/plugins/chosen/chosen.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="${STATIC_URL}backend/css/formSelects-v4.css" />
+	
+	<link href="${STATIC_URL}backend/css/font-awesome.min.css?v=4.4.0" rel="stylesheet"> 
+	
+    <link href="${STATIC_URL}backend/css/animate.css" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/style.css?v=4.1.0" rel="stylesheet"> 
+	<link href="${STATIC_URL}backend/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+ 
+	
+	
+
+</%block>
+
+<%block name="content"> 
+    <div class="wrapper wrapper-content">
+        <div class="row">
+            <div class="col-sm-3">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-content">
+                        <div class="file-manager">                           
+                            <h5>业务分组</h5>
+                            <ul class="folder-list" style="padding: 0">
+                               
+							   % for group in msg['data']:								
+								<li class="list-group-item"> 
+									<a href="${SITE_URL}project-list/?gid=${group['id']}"><i class="fa fa-folder"></i>${group['name']}</a>
+								</li>                               
+                                % endfor
+                            </ul>                            
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-9 animated fadeInRight">			   
+				  <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>已绑定后端域名列表</h5> 
+                    </div>
+                    <div class="ibox-content">
+                      
+                        <div class="table-responsive">
+                             <table class="table table-striped table-bordered table-hover dataTables-example"  id="CustomDatatable">
+								<thead>
+									<tr> 
+										<th>项目名</th>
+										<th>域名</th>
+										<th>服务类型</th> 
+										<th>所属组token</th>										
+										<th>操作</th>
+									</tr>
+								</thead>
+								<tbody>
+								      
+								     % for pro in msg['project']:
+									<tr> 
+										<td>${pro['name']}</td>	 
+										<td>${pro['domain']}</td> 
+										<td>${pro['gid_id__name']}</td>
+										<td>${pro['gid_id__token']}</td>
+										<td>
+											<a id="${pro['id']}" onclick="push_project(event)" class="btn-w-m btn-link"><i class="fa fa-exchange"></i> 推送 &#160 &#160 &#160</a>
+											<a href="${SITE_URL}project-list/edit?id=${pro['id']}" class="btn-w-m btn-link"><i class="fa fa-pencil"></i> 编辑 &#160 &#160 &#160 </a>
+											<a id="${pro['id']}" onclick="del(event)"  class="btn-w-m btn-link" ><i class="fa fa-warning"></i> 删除 </a>
+										 
+										</td>
+									</tr>
+									% endfor
+									 
+								</tbody>
+							</table>
+                        </div> 
+                    </div>
+                </div> 
+				<!-- 按钮功能 -->
+				<div class="clearfix layer-area" id="chutiyan">	
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal2">新建项目</button> 
+					<button type="button" class="btn btn-warning" data-toggle="modal" data-target="#myModal1"><i class="fa fa-warning"></i><span class="bold">变更项目绑定</span></button>
+				</div>
+					
+                </div> 
+            </div>
+        </div>
+    </div>
+	 
+	 
+	 <!-- moda1 -->  
+	<div class="modal inmodal" id="myModal1" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+				<FORM method="post" action="##" id="modal1">
+					<div class="modal-content animated flipInY">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+							<h4 class="modal-title">重新绑定项目</h4>                       
+						</div>
+						<div class="modal-body">
+						    <div class="form-group"> 
+							    <label for="name">业务组</label>
+								<select class="form-control" name="group-id">
+									<option value="">选择业务组</option>
+									% for room in msg['data']:									    
+									    <option value="${room['id']}">${room['name']}</option>
+                                    % endfor
+								</select> 
+							</div> 
+					 
+							<div class="form-group"> 
+							    <label for="name">业务域名</label>
+								<select class="form-control" name="pid">
+									<option value="">选择业务域名</option>
+									% for bond in msg['bondproject']:									    
+									    <option value="${bond['id']}">${bond['domain']}</option>
+                                    % endfor
+								</select> 
+							</div> 
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
+							<button type="button" class="btn btn-primary" id="modal1Btn">更新绑定</button>
+						</div>
+					</div>
+				</FORM>
+            </div>
+        </div> 
+	 
+	<!-- moda2 -->  
+	<div class="modal inmodal" id="myModal2" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+				<FORM method="post" action="##" id="modal2">
+					<div class="modal-content animated flipInY">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+							<h4 class="modal-title">创建项目</h4>                       
+						</div>
+						<div class="modal-body">
+							 <div class="form-group">
+								<label for="name">项目名</label>
+								<input class="form-control" type="text" placeholder="项目名" name="project-name" required="required" onkeyup="this.value=this.value.replace(/\s+/g,'')" >
+							</div> 
+					      
+							<!---->
+							<div class="form-group"> 
+								<input class="form-control" type="text" placeholder="域名" name="domain" style="width:20%;float:left" required="required" onkeyup="this.value=this.value.replace(/\s+/g,'')"> 
+								<select class="form-control" name="domain-id" style="width:80%;float:left"> 
+									 <option value="1">.a.com.cn</option>
+									 <option value="2">.b.com</option>
+								</select>  
+                             </div>
+							  
+							<!----> 
+						    <br/>
+							<div class="form-group" style="padding-top:30px;"> 
+								<select class="form-control" name="group-id">
+									<option value="">选择业务类型</option>
+									% for room in msg['data']:									    
+									    <option value="${room['id']}">${room['name']}</option>
+                                    % endfor
+								</select> 
+							</div> 
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
+							<button type="button" class="btn btn-primary" id="modal2Btn">保存</button>
+						</div>
+					</div>
+				</FORM>
+            </div>
+        </div> 
+  
+ 
+	
+	<%block name='JS'> 
+	
+	<!-- 全局js -->
+    <script src="${STATIC_URL}backend/js/jquery.min.js?v=2.1.4"></script>
+    <script src="${STATIC_URL}backend/js/bootstrap.min.js?v=3.3.6"></script>  
+	<!-- layer javascript -->
+	<script src="${STATIC_URL}backend/js/formSelects-v4.min.js"></script>
+	 <script src="${STATIC_URL}backend/js/jquery.dataTables.min.js"></script>
+    <script src="${STATIC_URL}backend/js/dataTables.bootstrap.min.js"></script>
+	<script src="${STATIC_URL}js/csrftoken.js"></script>
+	<script src="${STATIC_URL}backend/js/plugins/layer/layer.min.js"></script> 
+ 
+ 
+    <script type="text/javascript">
+            // 项目推送	
+				function push_project(e){
+						layer.confirm('确定要推送吗？', {
+						btn: ['确定','取消'] //按钮
+						}, function(){
+						var id = e.target.id ; 
+						$.ajax({
+							url: "${SITE_URL}api/v1/project/push",
+							type: "POST",
+							dataType: "json",
+							data:{'pid':id},
+							success:function(result){
+								console.log(result);
+								if (result.resultCode == 200){  
+									layer.msg(result.info,{icon: 1});
+									setTimeout("window.parent.location.reload();",100);
+									}
+								else{
+									layer.msg(result.info, {icon: 2});
+									} 
+							},
+						}); 
+						}, function(){
+						layer.msg('取消操作', {
+							time: 500
+						});
+						});
+					}
+	
+	
+			//删除
+				function del(e){
+						layer.confirm('确定要删除吗？', {
+						btn: ['确定','取消'] //按钮
+						}, function(){
+						var id = e.target.id ; 
+						$.ajax({
+							url: "${SITE_URL}project-list/del?id="+id,
+							type: "GET",
+							dataType: "json",
+							success:function(result){
+								console.log(result);
+								if (result.resultCode == '200'){  
+									layer.msg('完成',{icon: 1});
+									setTimeout("window.parent.location.reload();",100);
+									}
+								else{
+									layer.msg('操作失败', {icon: 2});
+									} 
+							},
+						}); 
+						}, function(){
+						layer.msg('取消操作', {
+							time: 500
+						});
+						});
+					}
+ 
+                $('#modal1Btn').on('click', function(){
+				    $.ajax({
+					    type: "POST",
+						dataType: "json",
+						url: "${SITE_URL}api/v1/project/bond",
+						data: $('#modal1').serialize(),
+						success: function (result) {
+						    if (result.resultCode == 200) {
+							   layer.msg(result.info); 
+							   setTimeout("window.parent.location.reload();",100);	
+							}
+							else{
+							    layer.msg(result.info);
+							};
+						},
+						error: function() {
+							 layer.msg(result.info); 	
+						 }
+					});
+				})  
+ 
+ 
+			    $('#modal2Btn').on('click', function(){
+				    $.ajax({
+					    type: "POST",
+						dataType: "json",
+						url: "${SITE_URL}api/v1/project/",
+						data: $('#modal2').serialize(),
+						success: function (result) {
+						    if (result.resultCode == 200) {
+							   layer.msg(result.info); 
+							   setTimeout("window.parent.location.reload();",100);	
+							}
+							else{
+							    layer.msg(result.info);
+							};
+						},
+						error: function() {
+							 layer.msg(result.info); 	
+						 }
+					});
+				})  
+	</script>  
+	<script>
+		$(function () {
+		$('#CustomDatatable').DataTable({
+			"bLengthChange": false,
+			"bFilter": false,
+			"bInfo": false,
+			"searching": true, 
+			"bAutoWidth": false,
+			"oLanguage": {
+			"oPaginate": {
+				"sFirst": "首页",
+				"sPrevious": "上一页",
+				"sNext": "下一页",
+				"sLast": "末页"
+			}
+			}
+		});
+		});
+	</script>
+ 
+ 
+   </%block>
+</%block> 

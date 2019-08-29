@@ -1,0 +1,268 @@
+
+<%inherit file="/base.htm"/>
+<%block name='head'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>配置管理系统-权限控制</title>
+	<meta name="description" content=""/>
+    <meta name="author" content=""/>
+	<link rel="shortcut icon" href="${STATIC_URL}favicon.ico" type="image/x-icon">
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->  
+ 
+
+	<link href="${STATIC_URL}backend/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/plugins/iCheck/custom.css" rel="stylesheet">
+	<link href="${STATIC_URL}backend/css/plugins/chosen/chosen.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="${STATIC_URL}backend/css/formSelects-v4.css" />
+	
+	<link href="${STATIC_URL}backend/css/font-awesome.min.css?v=4.4.0" rel="stylesheet"> 
+	
+    <link href="${STATIC_URL}backend/css/animate.css" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/style.css?v=4.1.0" rel="stylesheet"> 
+	<link href="${STATIC_URL}backend/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet"> 
+	<link href="${STATIC_URL}layer/css/layui.css" media="all"  rel="stylesheet">
+  
+</%block>
+
+<%block name="content"> 
+
+
+<div class="wrapper wrapper-content animated fadeIn">
+        <div class="row">
+            <div class="col-sm-12">
+                <div class="tabs-container">
+                    <ul class="nav nav-tabs">
+                        <li class="active"><a data-toggle="tab" href="#tab-1" aria-expanded="true">角色组</a>
+                        </li>
+                        <li class=""><a data-toggle="tab" href="#tab-2" aria-expanded="false">权限</a>
+                        </li>
+						
+                    </ul>
+                    <div class="tab-content"> 
+                        <div id="tab-1" class="tab-pane active">
+                            <div class="panel-body">
+                                  <div class="ibox float-e-margins"> 
+										<div class="ibox-content">
+											<div class="row">
+												<div class="col-sm-12"> 
+													
+													    <div class="clearfix layer-area"   style="float:right">	
+															<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#role">新增角色组</button> 
+														</div>
+														<form method="post" action="##"  id='form_group'>
+														<table class="table table-hover">
+															<thead>
+																<tr>
+																	<th>角色组名</th>
+																	<th>成员</th>
+																	<th>操作</th> 
+																</tr>
+															</thead>
+															<tbody>
+																% for u in msg['role']:
+																<tr>
+																	<td>${u['groups__name']}</td>
+																	<td>${u['username']}</td> 
+																	<td>
+																		<a id="${u['groups__name']}" onclick="sub_del(event)"  class="btn-w-m btn-link" >
+																		<i class="fa fa-warning"></i> 删除</a>
+																	</td> 														
+																</tr>
+																% endfor 
+															</tbody>
+														</table> 
+                                                      </form>														
+												</div>
+											</div>
+										</div>
+									</div>	
+                            </div>
+                        </div>
+                        <div id="tab-2" class="tab-pane">
+                            <div class="panel-body">
+							      <div class="ibox float-e-margins"> 
+										<div class="ibox-content">
+											<div class="row">
+												<div class="col-sm-12">
+													<form method="post" action="##" id='permissions' >
+													    <div class="modal-body"> 
+															<div class="form-group">
+																<label for="name">角色组</label>
+																<select class="form-control" name="role-group" id="selectbox" style="WIDTH:300px;">
+																	    <option value="">选择角色组</option> 
+																     	% for u in msg['role']:
+																		<option value="${u['groups__name']}">${u['groups__name']}</option> 
+																		% endfor
+																</select> 
+															</div>	 
+															<div id="test1" class="demo-transfer" style="width:100%"></div><br/>
+															<div class="modal-footer"> 
+																<button type="button" class="btn btn-primary" id="permissionBtn">更新</button>
+															</div>
+														</div> 
+													</form>
+												</div>
+											</div>
+										</div>
+									</div>	
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+	
+	<!-- MODAL 1 -->
+	<div class="modal inmodal" id="role" tabindex="-1" role="dialog" aria-hidden="true">
+		<div class="modal-dialog">
+			<FORM method="post" action="##" id="modal1">
+				<div class="modal-content animated flipInY">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+						<h4 class="modal-title">新建用户组</h4>                       
+					</div>
+					<div class="modal-body">
+						 <div class="form-group">
+							<label for="name">组名</label>
+							<input class="form-control" type="text" placeholder="组名" name="role-group" required="required" onkeyup="this.value=this.value.replace(/\s+/g,'')" >
+						</div> 
+					 
+						<div>
+								<label for="name">角色成员</label>
+								<select name="users-id" xm-select-search xm-select-type="2" xm-select="select16" xm-select-skin="danger" > 
+                                           	% for user in msg['user']:								
+										    <option value="${user['id']}">${user['username']}</option>
+											% endfor 
+                                 			 							
+								</select>
+					    </div> 
+					</div>
+					<div class="modal-footer">
+						<button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
+						<button type="button" class="btn btn-primary" id="addGroup">保存</button>
+					</div>
+				</div>
+			</FORM>
+		</div>
+	</div> 
+	
+	<%block name='JS'> 
+	   <!-- 全局js -->
+		<script src="${STATIC_URL}backend/js/jquery.min.js?v=2.1.4"></script>
+		<script src="${STATIC_URL}backend/js/bootstrap.min.js?v=3.3.6"></script> 
+		<!-- 自定义js -->
+		<script src="${STATIC_URL}backend/js/content.js?v=1.0.0"></script>
+		<!-- layer javascript -->
+	    <script src="${STATIC_URL}backend/js/formSelects-v4.min.js"></script>
+		<script src="${STATIC_URL}backend/js/plugins/layer/layer.min.js"></script> 
+		<script src="${STATIC_URL}js/csrftoken.js"></script>
+		<script src="${STATIC_URL}layer/layui.js" charset="utf-8"></script>
+		
+		<script>
+			layui.use(['transfer', 'layer', 'util'], function(){
+			  var $ = layui.$,
+			  transfer = layui.transfer,
+			  layer = layui.layer,
+			  util = layui.util;
+			  
+			  //数据
+			  var data1 = ${msg['permission']}
+			 
+			  //渲染基础效果
+			  transfer.render({
+				elem: '#test1',
+				data: data1,
+			//	value: ["1", "3", "5", "7", "9", "11"],
+				id: 'left1',
+				parseData: function(result){return{"value":result.value,"title":result.title} }
+			  })
+			});  
+			
+			$('#permissionBtn').on('click', function(){
+			        transfer = layui.transfer;
+					var getData=transfer.getData('left1');
+					
+					var obj =  document.querySelector('[name="role-group"]').value;
+			 
+				    console.log(obj);
+					 
+					$.ajax({
+						type: "POST",
+						dataType: "json",
+						url: "${SITE_URL}api/v1/user/group/permission",
+						data:{'Data':JSON.stringify(getData),'role-group':obj},
+						success: function (result) {
+							if (result.resultCode == 200) {
+								layer.msg(result.info); 
+								setTimeout("window.parent.location.reload();",100);							    
+							}
+							else{
+								layer.msg(result.info);
+							};
+						},
+						error: function() {						
+							 layer.msg(result.info); 
+						 }
+					});
+				})  
+			</script>
+		
+        <script type="text/javascript">  
+			    $('#addGroup').on('click', function(){
+				    $.ajax({
+					    type: "POST",
+						dataType: "json",
+						url: "${SITE_URL}api/v1/user/group/",
+						data: $('#modal1').serialize(),
+						success: function (result) {
+						    if (result.resultCode == 200) {
+							    layer.msg(result.info); 
+								setTimeout("window.parent.location.reload();",100);							    
+							}
+							else{
+							    layer.msg(result.info);
+							};
+						},
+						error: function() {						
+							 layer.msg(result.info); 
+						 }
+					});
+				})
+				
+			
+				function sub_del(e){
+						layer.confirm('确定要删除吗？', {
+						btn: ['确定','取消'] //按钮
+						}, function(){
+						var id = e.target.id ; 
+					  
+						$.ajax({
+							url: "${SITE_URL}api/v1/user/group/del?rolename="+id,
+							type: "GET",
+							dataType: "json",
+							async: false,
+							success:function(result){
+								console.log(result);
+								if (result.resultCode == '200'){  
+									layer.msg('完成',{icon: 1});
+									setTimeout("window.parent.location.reload();",100);
+									}
+								else{
+									layer.msg('操作失败', {icon: 2});
+									} 
+							},
+						}); 
+						}, function(){
+						layer.msg('取消操作', {
+							time: 500
+						});
+						});
+					}
+				
+	    </script>
+		
+	</%block> 	
+	 
+</%block> 

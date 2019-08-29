@@ -1,0 +1,328 @@
+
+<%inherit file="/base.htm"/>
+<%block name='head'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>配置管理系统-业务组</title>
+	<meta name="description" content=""/>
+    <meta name="author" content=""/>
+	<link rel="shortcut icon" href="${STATIC_URL}favicon.ico" type="image/x-icon">
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->  
+	 
+
+	<link href="${STATIC_URL}backend/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/plugins/iCheck/custom.css" rel="stylesheet">
+	<link href="${STATIC_URL}backend/css/plugins/chosen/chosen.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="${STATIC_URL}backend/css/formSelects-v4.css" />
+	
+	<link href="${STATIC_URL}backend/css/font-awesome.min.css?v=4.4.0" rel="stylesheet"> 
+	
+    <link href="${STATIC_URL}backend/css/animate.css" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/style.css?v=4.1.0" rel="stylesheet"> 
+	<link href="${STATIC_URL}backend/css/plugins/dataTables/dataTables.bootstrap.css" rel="stylesheet">
+ 
+	
+	
+
+</%block>
+
+<%block name="content"> 
+    <div class="wrapper wrapper-content">
+        <div class="row">
+            <div class="col-sm-4">
+                <div class="ibox float-e-margins">
+                    <div class="ibox-content">
+                        <div class="file-manager">                           
+                            <h5>业务分组</h5>
+                            <ul class="folder-list" style="padding: 0">
+                               
+							   % for group in msg['group']:								
+								<li class="list-group-item">
+								
+								    <span class="pull-right"> 
+									<a id="${group['id']}" onclick="del_group(event)" class="btn btn-default btn-xs" style="width:50px;margin-left:5px;" > 删除</a></span>
+									
+								<!-- 	<span class="pull-right">
+									<a href="${SITE_URL}group-list/edit?gid=${group['id']}" class="btn btn-default btn-xs" style="width:120px;margin-left:5px;">编辑NGINX全局配置</a></span>
+									
+									<span class="pull-right">
+									<a id="${group['id']}" onclick="push_group(event)" class="btn btn-primary btn-xs" style="width:50px;margin-left:5px;" > 推送</a></span>
+								-->
+									
+									<a href="${SITE_URL}group-list/?gid=${group['id']}"><i class="fa fa-folder"></i>${group['name']}</a>
+								</li>                               
+                                % endfor
+                            </ul>                            
+                            <div class="clearfix"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-sm-8 animated fadeInRight">			   
+				  <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>已绑定后端IP列表</h5> 
+                    </div>
+                    <div class="ibox-content">
+                      
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-hover">
+                                <thead>
+                                    <tr>  
+                                        <th>IP地址</th>
+                                        <th>组名</th> 
+                                        <th>操作</th>
+                                    </tr>
+                                </thead>
+                                <tbody>                                    
+                                    % for ip in msg['ipaddr']:
+                                    <tr> 
+                                        <td>${ip['ip']}</td>
+                                        <td>${ip['gid_id__name']}</td> 
+										<td><a id="${ip['id']}" onclick="del(event)"  class="btn-w-m btn-link" ><i class="fa fa-warning"></i> 删除 </a></td>
+                                        </td>
+                                    </tr> 
+                                    % endfor
+									 
+                                </tbody>
+                            </table>
+                        </div> 
+                    </div>
+                </div> 
+				<!-- 按钮功能 -->
+				<div class="clearfix layer-area" id="chutiyan">	
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal1">新建分组</button> 
+					<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal3">绑定IP</button> 
+				</div>
+					
+                </div> 
+            </div>
+        </div>
+    </div>
+	 
+	<!-- modal -->  
+	<div class="modal inmodal" id="myModal1" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+				<FORM method="post" action="##" id="modal1">
+					<div class="modal-content animated flipInY">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+							<h4 class="modal-title">创建分组</h4>                       
+						</div>
+						<div class="modal-body">  
+							<div class="form-group">
+								<label for="name">业务组名</label>
+								<input class="form-control" type="text" placeholder="分组名" name="group-name" required="required" oninput="setCustomValidity('');" oninvalid="setCustomValidity('业务组名不能为空')">
+							</div>
+							 
+						 
+							<div class="form-group">
+								<label for="name">业务类型</label>
+								<select class="form-control" name="service-type">
+									<option value="">选择业务类型</option>
+									<option value="api">API代理</option>
+									<option value="inside">内部服务</option>
+									<option value="external">外部服务</option>
+									<option value="exproxy">外部代理服务</option>
+									<option value="inproxy">内部代理服务</option>
+								</select> 
+							</div>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
+							<button type="button" class="btn btn-primary" id="modal1Btn">保存</button>
+						</div>
+					</div>
+				</FORM>
+            </div>
+        </div>  
+		<!-- modal 3 -->
+		<div class="modal inmodal" id="myModal3" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog">
+				<FORM method="post" action="##" id="modal3">
+					<div class="modal-content animated flipInY">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+							<h4 class="modal-title">绑定后端IP</h4>                       
+						</div>
+						<div class="modal-body">  
+							<div class="form-group">
+								<label for="name">业务组</label>
+								<select class="form-control" name="service-room-id">
+									<option value="">选择业务组</option>
+								 
+							            % for group in msg['group']:
+									    <option value="${group['id']}">${group['name']}</option>
+                        				% endfor				
+								</select> 
+							</div>	
+						    
+							 <div>
+								<label for="name">关联IP</label>
+								<select name="ipaddr" xm-select-search xm-select-type="2" xm-select="select16" xm-select-skin="danger" >
+                                       	    % for i in msg['iplist']:				
+										    <option value="${i}">${i}</option>
+                                 			% endfor							
+								</select>
+							</div> 
+							 
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-white" data-dismiss="modal">关闭</button>
+							<button type="button" class="btn btn-primary" id="modal3Btn">保存</button>
+						</div>
+					</div>
+				</FORM>
+            </div>
+        </div> 
+  
+ 
+	
+	<%block name='JS'> 
+	
+	<!-- 全局js -->
+    <script src="${STATIC_URL}backend/js/jquery.min.js?v=2.1.4"></script>
+    <script src="${STATIC_URL}backend/js/bootstrap.min.js?v=3.3.6"></script>  
+	<!-- layer javascript -->
+	<script src="${STATIC_URL}backend/js/formSelects-v4.min.js"></script>
+	
+	<script src="${STATIC_URL}js/csrftoken.js"></script>
+	<script src="${STATIC_URL}backend/js/plugins/layer/layer.min.js"></script> 
+	<script type="text/javascript"> 
+			    $('#modal1Btn').on('click', function(){
+				    $.ajax({
+					    type: "POST",
+						dataType: "json",
+						url: "${SITE_URL}api/v1/group/",
+						async: true,
+						data: $('#modal1').serialize(),
+						success: function (result) {
+						    if (result.resultCode == 200) {
+							    layer.msg(result.info); 
+								setTimeout("window.parent.location.reload();",100);							    
+							}
+							else{
+							    layer.msg(result.info);
+							};
+						},
+						error: function() {						
+							 layer.msg(result.info); 
+						 }
+					});
+				})
+			
+	 
+				
+				$('#modal3Btn').on('click', function(){
+				    $.ajax({
+					    type: "POST",
+						dataType: "json",
+						url: "${SITE_URL}api/v1/ip/",
+						async: true,
+						data: $('#modal3').serialize(),
+						success: function (result) {
+						    if (result.resultCode == 200) {
+							    layer.msg(result.info); 
+								setTimeout("window.parent.location.reload();",100);							    
+							}
+							else{
+							    layer.msg(result.info);
+							};
+						},
+						error: function() {						
+							 layer.msg(result.info); 
+						 }
+					});
+				})
+				
+				
+				function del(e){
+						layer.confirm('确定要删除吗？', {
+						btn: ['确定','取消'] //按钮
+						}, function(){
+						var id = e.target.id ; 
+						$.ajax({
+							url: "${SITE_URL}group-list/ip/delete?ipid="+id,
+							async: true,
+							type: "GET",
+							dataType: "json",
+							success:function(result){
+								console.log(result);
+								if (result.resultCode == '200'){  
+									layer.msg('完成',{icon: 1});
+									setTimeout("window.parent.location.reload();",100);
+									}
+								else{
+									layer.msg('操作失败', {icon: 2});
+									} 
+							},
+						}); 
+						}, function(){
+						layer.msg('取消操作', {
+							time: 500
+						});
+						});
+					}
+					
+					
+				function del_group(e){
+							layer.confirm('确定要删除吗？', {
+							btn: ['确定','取消'] //按钮
+							}, function(){
+							var id = e.target.id ; 
+							$.ajax({
+								url: "${SITE_URL}group-list/del?gid="+id,
+								async: true,
+								type: "GET",
+								dataType: "json",
+								success:function(result){
+									console.log(result);
+									if (result.resultCode == '200'){  
+										layer.msg('完成',{icon: 1});
+										setTimeout("window.parent.location.reload();",100);
+										}
+									else{
+										layer.msg('操作失败', {icon: 2});
+										} 
+								},
+							}); 
+							}, function(){
+							layer.msg('取消操作', {
+								time: 500
+							});
+							});
+						}	
+
+				function push_group(e){
+							layer.confirm('确定要推送吗？', {
+							btn: ['确定','取消'] //按钮
+							}, function(){
+							var id = e.target.id ;					
+							$.ajax({
+								url: "${SITE_URL}api/v1/group/push",
+								type: "POST",
+								data:{'gid':id},
+								async: true,
+								dataType: "json",
+								success:function(result){
+									console.log(result);
+									if (result.resultCode == 200){  
+										layer.msg('完成',{icon: 1});
+										setTimeout("window.parent.location.reload();",100);
+										}
+									else{
+										layer.msg(result.info, {icon: 2});
+										} 
+								},
+							}); 
+							}, function(){
+							layer.msg('取消操作', {
+								time: 500
+							});
+							});
+						}					
+	</script>  
+ 
+   </%block>
+</%block> 
