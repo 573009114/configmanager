@@ -10,8 +10,13 @@ from qiniu import CdnManager
 
 def clear_qiniu(url):
     # 账户ak，sk
+<<<<<<< HEAD
     access_key = 'MeUQwQAvlOJ7C-wVcCsJIvq2122120PppRT3VrYKog34xv'
     secret_key = 'wAwXf1212UYYD3vkHa_Qqi9S3F31RF6F8reIP7cWj-jj'
+=======
+    access_key = 'MeUQwQAvlOJ7C11-wVcC2ssJIvq0PppRT3VrYKog34xv'
+    secret_key = 'wAwXfUYYD3vkHa_2211Qqi911S3F31RF6F8reIP7cWj-jj'
+>>>>>>> cd6c1146062ec7522fe3368017d40d420ce64436
 
     auth = qiniu.Auth(access_key=access_key, secret_key=secret_key)
     cdn_manager = CdnManager(auth)
@@ -30,7 +35,11 @@ def yun_config():
     """
     Date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())
     AppID='040df59cfa41d034ce3dd8a7ebf6f1'
+<<<<<<< HEAD
     AppSecret='484a612121260445'
+=======
+    AppSecret='484a660442335'
+>>>>>>> cd6c1146062ec7522fe3368017d40d420ce64436
     MD5=md5.new()
     MD5.update('%s%s%s' %(Date,AppSecret,AppID))
     Sgn=MD5.hexdigest()
