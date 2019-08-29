@@ -30,7 +30,7 @@ def yun_config():
     """
     Date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())
     AppID='040df59cfa41d034ce3dd8a7ebf6f1'
-    AppSecret='484a660445'
+    AppSecret='484a660442335'
     MD5=md5.new()
     MD5.update('%s%s%s' %(Date,AppSecret,AppID))
     Sgn=MD5.hexdigest()
