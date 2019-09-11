@@ -1,0 +1,102 @@
+
+<%inherit file="/base.htm"/>
+<%block name='head'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>配置管理系统-权限组修改</title>
+	<meta name="description" content=""/>
+    <meta name="author" content=""/>
+	<link rel="shortcut icon" href="${STATIC_URL}favicon.ico" type="image/x-icon">
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->  
+ 
+
+	<link href="${STATIC_URL}backend/css/bootstrap.min.css?v=3.3.6" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/plugins/iCheck/custom.css" rel="stylesheet">
+	<link href="${STATIC_URL}backend/css/plugins/chosen/chosen.css" rel="stylesheet">
+	<link rel="stylesheet" type="text/css" href="${STATIC_URL}backend/css/formSelects-v4.css" />
+	
+	<link href="${STATIC_URL}backend/css/font-awesome.min.css?v=4.4.0" rel="stylesheet"> 
+	
+    <link href="${STATIC_URL}backend/css/animate.css" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/style.css?v=4.1.0" rel="stylesheet"> 
+ 
+	<link href="${STATIC_URL}layer/css/layui.css" media="all"  rel="stylesheet">
+  
+</%block>
+
+<%block name="content"> 
+    <div class="wrapper wrapper-content animated fadeInRight" style="min-height:500px;">
+        <div class="ibox float-e-margins">
+			<div class="ibox-title">
+				<h5>权限组编辑</h5> 
+			</div>
+			<div class="ibox-content">
+				<div class="row">
+					<div class="col-sm-12">
+						<form role="form" id="role">
+							<div class="form-group">
+								<label>组名</label>
+								 <input class="form-control" type="text" name="group-name" value="${msg['groupname']}" >
+							</div> 
+							<div class="form-group">
+							<label">成员</label>
+							<div class="input-group"> 
+								<select name="users-id" data-placeholder="选择角色成员" class="chosen-select" multiple  style="width:100%" tabindex="4">
+									<option value="">请选择角色成员</option>
+									% for user in msg['users']: 
+									<option value="${user['id']}" hassubinfo="true">${user["username"]}</option> 
+									% endfor 
+								</select>
+							</div>
+							</div>
+							
+							<div>
+								<button type="button" class="btn btn-primary" id="addGroup"><strong>保存</strong>
+								</button> 
+							</div>
+						</form>
+					</div>
+				</div>
+			</div>
+		</div>
+    </div>
+	<%block name='JS'> 
+	    <!-- 全局js -->
+		<script src="${STATIC_URL}backend/js/jquery.min.js?v=2.1.4"></script>
+		<script src="${STATIC_URL}backend/js/bootstrap.min.js?v=3.3.6"></script> 
+		<!-- 自定义js -->
+		<script src="${STATIC_URL}backend/js/content.js?v=1.0.0"></script>
+		<script src="${STATIC_URL}backend/js/plugins/chosen/chosen.jquery.js"></script>
+		<script src="${STATIC_URL}backend/js/demo/form-advanced-demo.js"></script> 
+		<!-- layer javascript -->
+	    <script src="${STATIC_URL}backend/js/formSelects-v4.min.js"></script>
+		<script src="${STATIC_URL}backend/js/plugins/layer/layer.min.js"></script> 
+		<script src="${STATIC_URL}js/csrftoken.js"></script>
+		<script src="${STATIC_URL}layer/layui.js" charset="utf-8"></script>
+		
+		<script type="text/javascript">  
+			    $('#addGroup').on('click', function(){
+				    $.ajax({
+					    type: "POST",
+						dataType: "json",
+						url: "${SITE_URL}api/v1/user/group/edit",
+						data: $('#role').serialize(),
+						success: function (result) {
+						    if (result.resultCode == 200) {
+							    layer.msg(result.info); 
+								setTimeout("window.parent.location.reload();",100);							    
+							}
+							else{
+							    layer.msg(result.info);
+							};
+						},
+						error: function() {						
+							 layer.msg(result.info); 
+						 }
+					});
+				}) 
+		</script>
+	</%block> 
+	
+</%block> 

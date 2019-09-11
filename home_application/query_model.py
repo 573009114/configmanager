@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from home_application.models import *
+import HTMLParser
 
 class QuerySet:
     """
@@ -66,8 +67,11 @@ class QueryUpdate:
     def update_project(self):
         """
         更新虚拟主机配置和跳转规则配置
-        """
-        result=Project.objects.filter(id=self.id).update(vhost_conf=self.vhost,rewrite_conf=self.rewrite)
+        """  
+        html_parser = HTMLParser.HTMLParser() 
+        vhost=html_parser.unescape(self.vhost)
+        rewrite=html_parser.unescape(self.rewrite)
+        result=Project.objects.filter(id=self.id).update(vhost_conf=vhost,rewrite_conf=rewrite)
         return result
 
     def update_group(self):

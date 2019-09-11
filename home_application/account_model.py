@@ -8,7 +8,7 @@ class AccountQueryget:
     def __init__(self,**kwargs):
         self.role_group=kwargs.get('role-group')
         self.role_user=kwargs.get('role-user')
-
+        self.group_name=kwargs.get('groupname')
     def select_role_user(self):
         """
         查找所有用户组和用户
@@ -34,7 +34,14 @@ class AccountQueryget:
         """
         result=Permission.objects.filter(name=self.role_group).values('id','name','codename')
         return result
-         
+    def select_group_user(self):
+        """
+        根据组名查找所属用户
+        """
+        group=Group.objects.get(name=self.group_name)
+        users=group.user_set.all().values('username','id')  
+        return users
+
     def select_exist_permission(self):
         """
         获取组下的所有权限
@@ -90,7 +97,25 @@ class AccountQuerydel:
         """
         result=Group.objects.filter(name=self.role_group).delete()
         return result
+
+class AccountQueryupdate:
+
+    def __init__(self,**kwargs):
+        self.role_groupname=kwargs.get('group-name')
+        self.uid=kwargs.get('UID')
+
+    def update_roles(self):
+        """
+        用户组中所有用户退出，并新关联用户
+        """
+        g = Group.objects.get(name=self.role_groupname) 
+        g.user_set.clear()
+
+        if self.role_groupname:
+            gid=Group.objects.filter(name=self.role_groupname).values('id')[0]['id']
+            for uid in self.uid:  
+                obj=User.objects.filter(id=uid).first()
+                obj.groups.add(gid)
+            return bool(True)
         
-
-
 

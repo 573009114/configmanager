@@ -1,0 +1,112 @@
+<%inherit file="/base.htm"/>
+<%block name='head'>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+	<title>配置管理系统-项目配置</title>
+	<meta name="description" content=""/>
+    <meta name="author" content=""/>
+	<link rel="shortcut icon" href="${STATIC_URL}favicon.ico" type="image/x-icon">
+    <!--[if lt IE 9]>
+    <meta http-equiv="refresh" content="0;ie.html" />
+    <![endif]-->  
+	<link href="${STATIC_URL}backend/css/bootstrap.min.css?v=3.3.6" rel="stylesheet"> 
+    <link href="${STATIC_URL}backend/css/font-awesome.css?v=4.4.0" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/animate.css" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/plugins/codemirror/codemirror.css" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/plugins/codemirror/ambiance.css" rel="stylesheet">
+    <link href="${STATIC_URL}backend/css/style.css?v=4.1.0" rel="stylesheet">
+</%block>
+
+<%block name="content"> 
+<div class="wrapper wrapper-content">
+    <form action="##" method='POST' id="edit"> 
+        <div class="row">
+            <div class="col-sm-12 animated fadeInRight">			   
+				<div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>${msg['data'][0]['domain']}虚拟主机配置</h5> 			
+                    </div>
+                    <div class="ibox-content">  
+						<div id="vhost" style="min-height:300px;">${msg['data'][0]['vhost_conf']}</div>
+                    </div>
+                </div>            
+            </div>            
+            <div class="col-sm-12 animated fadeInRight">			   
+                <div class="ibox float-e-margins">
+                    <div class="ibox-title">
+                        <h5>${msg['data'][0]['domain']}跳转规则配置</h5> 			
+                    </div>
+                    <div class="ibox-content"> 
+                        <div id="rewrite" style="min-height:300px;">${msg['data'][0]['rewrite_conf']}</div> 
+                    </div>
+                </div>
+            </div> 
+            <div class="col-sm-12 animated fadeInRight">                 
+                <div class="ibox-content">
+                <button class="btn btn-primary " id="serverBtn" type="button"><i class="fa fa-check"></i>&nbsp;更新</button>
+                <a href="javascript:history.back(-1);" class="btn btn-sm btn-info">返回</a>           
+                </div>
+            </div> 
+        </div>
+    </form>
+</div> 
+
+    <%block name='JS'>
+    <!-- 全局js -->
+	<script src="${STATIC_URL}backend/js/jquery.min.js?v=2.1.4"></script>
+ 
+    <script src="${STATIC_URL}backend/js/bootstrap.min.js?v=3.3.6"></script>
+
+    <!-- Peity -->
+    <script src="${STATIC_URL}backend/js/plugins/peity/jquery.peity.min.js"></script>
+
+
+    <!-- 自定义js -->
+    <script src="${STATIC_URL}backend/js/content.js?v=1.0.0"></script>
+	<script src="${STATIC_URL}js/csrftoken.js"></script>
+    <script src="${STATIC_URL}backend/js/plugins/layer/layer.min.js"></script>
+	<script src="${STATIC_URL}backend/js/aceEdit/ace.js" type="text/javascript" charset="utf-8"></script> 
+    <script> 
+            var editor1 = ace.edit("vhost");
+			editor1.setTheme("ace/theme/terminal");
+			editor1.getSession().setMode("ace/mode/nginx");
+			var editor2 = ace.edit("rewrite");
+			editor2.setTheme("ace/theme/terminal");
+			editor2.getSession().setMode("ace/mode/nginx"); 
+			
+            $('#serverBtn').on('click', function(){  
+                    var vhostBody = editor1.getValue();
+                    var rewriteBody = editor2.getValue();
+                    var urls = window.location.href.split('?')[1];
+                    var id = urls.split('=')[1];
+                    var postData={
+                        id:id,
+                        vhost:vhostBody,
+                        rewrite:rewriteBody
+                    }
+				    $.ajax({
+					    type: "POST",
+						url: "${SITE_URL}project-list/edit",
+						data: postData, 
+						dataType:"json",
+                      					
+						success: function (result) {
+						    console.log(result);
+						    if (result.resultCode == 200) {
+							    layer.msg(result.info); 
+                                setTimeout("window.parent.location.reload();",300);							    
+							}
+							else{
+							    layer.msg(result.info);
+							};
+						},
+						error: function() {						
+							 layer.msg('提交异常'); 
+						 }
+					});
+				  });
+				 
+				  
+  
+    </script>
+    </%block>
+</%block> 

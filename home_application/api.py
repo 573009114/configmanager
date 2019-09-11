@@ -9,7 +9,9 @@ an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express o
 See the License for the specific language governing permissions and limitations under the License.
 """
 import json
-import uuid
+import uuid 
+import chardet
+import os 
 
 from django.http import HttpResponse
 from django.shortcuts import render,render_to_response
@@ -178,8 +180,8 @@ def group_push_api(request):
             msg={'resultCode':u'60002','data':u'','info':u'etcd推送异常，请检查是否绑定后端'} 
         return HttpResponse(json.dumps(msg))   
     msg={'resultCode':u'60003','data':u'','info':u'不支持的请求'} 
-    return HttpResponse(json.dumps(msg)) 
-
+    return HttpResponse(json.dumps(msg))  
+ 
 def project_push_api(request):
     """
     项目信息推送接口
@@ -191,26 +193,38 @@ def project_push_api(request):
 
     if request.method == 'POST':
         pid=request.POST.get('pid')
-        project_info=QueryGet().select_project_conf(id=pid)
-        for field in project_info:
-            fields1='vhost'
-            fields2='rewrite'
-            token=field['gid_id__token']
-            domain=field['domain']
-            vhost=field['vhost_conf']
-            rewrite=field['rewrite_conf']
- 
+        project_info=QueryGet().select_project_conf(id=pid)  
+        fields1='vhost'
+        fields2='rewrite'
+        token=project_info[0]['gid_id__token']
+        domain=project_info[0]['domain']
+        vhost=project_info[0]['vhost_conf'].encode('utf8')
+        rewrite=project_info[0]['rewrite_conf'].encode('utf8')
+
+        #解决编码导致的配置文件生成异常
+        vhost_open=open('tmp/%s_vhost' %domain,'w')
+        vhost_open.write(vhost) 
+        vhost_open.close()
+        os.system("sed -i 's/\xc2\xa0/ /g' tmp/%s_vhost" %domain) 
+
+        rewrite_open=open('tmp/%s_rewrite' %domain,'w')
+        rewrite_open.write(rewrite) 
+        rewrite_open.close() 
+        os.system("sed -i 's/\xc2\xa0/ /g' tmp/%s_rewrite" %domain)
+         
+        vhost_txt=open('tmp/%s_vhost'%domain).read()
+        rewrite_txt=open('tmp/%s_rewrite'%domain).read()
+
         if vhost != '':
-            if rewrite == '':
+            if rewrite == '': 
                 vhostKeys=('/%s/%s/%s' %(token,fields1,domain)) 
-                pushVhost=etcdClient().writeValue(vhostKeys,vhost)
+                pushVhost=etcdClient().writeValue(vhostKeys,vhost_txt)
                 msg={'resultCode':u'200','data':u'','info':u'推送成功，rewrite内容为空'}
             else:
                 vhostKeys=('/%s/%s/%s' %(token,fields1,domain))
                 rewriteKeys=('/%s/%s/%s' %(token,fields2,domain))
-                pushVhost=etcdClient().writeValue(vhostKeys,vhost)
-              
-                pushRewrite=etcdClient().writeValue(rewriteKeys,rewrite)
+                pushVhost=etcdClient().writeValue(vhostKeys,vhost_txt)
+                pushRewrite=etcdClient().writeValue(rewriteKeys,rewrite_txt)
                 msg={'resultCode':u'200','data':u'','info':u'etcd推送成功'} 
             return HttpResponse(json.dumps(msg))
         else:
@@ -263,8 +277,6 @@ def role_group_api(request):
     """
     角色组接口
     """
-   
-
     if request.method == 'POST':
         group=request.POST.get('role-group')
         userId=request.POST.getlist('users-id')
@@ -288,7 +300,8 @@ def role_group_del_api(request):
     """
  
     if request.method =='GET':
-        group=request.GET.get('rolename')
+        group=request.GET.get('rolename').encode('utf-8')
+        print(group)
         kwargs={'role-group':group}
         result=AccountQuerydel(**kwargs).delete_group()
         msg={'resultCode':u'200','data':result,'info':u'删除成功'}
@@ -329,6 +342,23 @@ def role_group_permission_api(request):
             msg={'resultCode':u'60001','data':'','info':u'失败的请求'}
         return HttpResponse(json.dumps(msg)) 
 
+    else:
+        msg={'resultCode':u'60003','data':u'','info':u'不支持的请求'}    
+        return HttpResponse(json.dumps(msg)) 
+
+def role_group_save_api(request):
+    if request.method == 'POST':
+        group_name=request.POST.get('group-name').encode('utf-8')
+        userId=request.POST.getlist('users-id')
+        kwargs={'group-name':group_name,'UID':userId} 
+        try:
+          
+            result=AccountQueryupdate(**kwargs).update_roles()
+
+            msg={'resultCode':u'200','data':result,'info':u'成功'}
+        except Exception:
+            msg={'resultCode':u'60001','data':'','info':u'失败的请求'}
+        return HttpResponse(json.dumps(msg))
     else:
         msg={'resultCode':u'60003','data':u'','info':u'不支持的请求'}    
         return HttpResponse(json.dumps(msg)) 

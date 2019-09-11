@@ -15,13 +15,13 @@ class Handle_Api:
     def handle_host(self,bk_token):
         ip=[]
         self.token=bk_token
-        url='http://paas.a1111.net/api/c/compapi/v2/cc/search_host/'
+        url='http://paas.11111.net/api/c/compapi/v2/cc/search_host/'
      
         data={
             "bk_app_code": "confd",
             "bk_app_secret": "359b9cf6-ba4c-479e-997b-a1969368be2d",
             "bk_token": self.token,
-           # "bk_username":"hao",    # 需要加应用白名单
+           
         }
         req=json.loads(Tencent_Api(url=url,data=data).search_host())
         for ipaddr in req['data']['info']:

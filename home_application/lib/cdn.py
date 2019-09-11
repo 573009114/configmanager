@@ -10,10 +10,8 @@ from qiniu import CdnManager
 
 def clear_qiniu(url):
     # 账户ak，sk
-
-    access_key = 'MeUQwQAvlOJ7C11-wVcC2ssJIvq0PppRT3VrYKog34xv'
-    secret_key = 'wAwXfUYYD3vkHa_2211Qqi911S3F31RF6F8reIP7cWj-jj'
-
+    access_key = 'MeUQwQAvlOJ7C-wVasdfcCsJIvq0PppRT3VrYKog34xv'
+    secret_key = 'wAwXfUY12YD3vkHa_Qqi9S3F31RF6F8reIP7cWj-jj'
 
     auth = qiniu.Auth(access_key=access_key, secret_key=secret_key)
     cdn_manager = CdnManager(auth)
@@ -31,9 +29,8 @@ def yun_config():
     云端cdn基础配置
     """
     Date=time.strftime('%Y-%m-%d %H:%M:%S',time.localtime())
-    AppID='040df59cfa41d034ce3dd8a7ebf6f1'
-    AppSecret='484a660442335'
-
+    AppID='040df59cfa41d034ceasdf13dd8a7ebf6f1'
+    AppSecret='4844a6610445'
     MD5=md5.new()
     MD5.update('%s%s%s' %(Date,AppSecret,AppID))
     Sgn=MD5.hexdigest()
@@ -44,7 +41,7 @@ def yun_task(data):
     提交任务 
     '''
     AppID,Sgn,Date,AppSecret=yun_config()
-    url='https://webapi.isurecloud.com/content/add_purge'
+    url='https://webapi.1ecloud.com/content/add_purge'
     d=json.dumps(data)
     res= requests.post(url,d)
     return json.loads(res.text)

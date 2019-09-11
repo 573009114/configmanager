@@ -10,10 +10,19 @@ See the License for the specific language governing permissions and limitations 
 """
 import json
 import uuid
+import psutil
+import socket
+import platform
+import chardet
+import sys
+reload(sys)
+sys.setdefaultencoding('utf8')
+ 
 
 from django.http import HttpResponse
 from django.shortcuts import render,render_to_response
 from django.contrib.auth.decorators import permission_required 
+
 
 from common.mymako import render_mako_context
 from account.decorators import login_exempt
@@ -23,14 +32,38 @@ from home_application.query_model import *
 from home_application.lib.tencent_api import *
 from home_application.lib.etcd_conf import *
 from home_application.account_model import *
- 
+
  
 
 def home(request):
     """
     首页
     """
-    return render_mako_context(request, '/home_application/home.htm')
+    sys_platform=platform.system()
+    sys_kernel_version=platform.uname()[2]
+    sys_python_version=platform.python_version()
+    sys_cpu_core=psutil.cpu_count()
+    sys_mem_total=psutil.virtual_memory()[0]/1024000
+
+    sys_disk_parent=psutil.disk_usage('/')[3]
+    sys_disk_parent_data=psutil.disk_usage('/export')[3]
+    skt = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+    skt.connect(('8.8.8.8',80))
+    socketIpPort = skt.getsockname()
+    sys_ip = socketIpPort[0] 
+
+    msg={
+        u'平台':sys_platform,
+        u'内核版本':sys_kernel_version,
+        u'python版本':sys_python_version,
+        u'CPU核心数量':sys_cpu_core,
+        u'内存容量（MB）':sys_mem_total,
+        u'系统盘使用率（%）':sys_disk_parent,
+        u'数据盘使用率（%）':sys_disk_parent_data,
+        u'服务器IP':sys_ip 
+    }
+
+    return render_mako_context(request, '/home_application/home.htm',{'msg':msg})
 
 
  
@@ -47,32 +80,33 @@ def project_list(request):
         _gid=request.GET.get('gid') 
         projects=QueryGet().select_project_all_list(_gid) 
         project_all=QueryGet().select_project_all()
+    
         msg={
             'data': group,
             'project':projects,
-            'bondproject':project_all
+            'bondproject':project_all 
         }
     except Exception:
         msg={'resultCode':u'50002','data':'','info':u'数据获取错误'} 
     return render_mako_context(request, '/home_application/project-list.htm',{'msg':msg})
 
+ 
 def project_edit(request):
     """
     项目编辑
-    """
+    """ 
     if not request.user.has_perm('home_application.can_add_project'):
-        return render(request, '403.html')
+        return render(request, '403.html')  
 
     if request.method == 'POST':  
         pid=request.POST.get('id')      
         vhost=request.POST.get('vhost')
-        rewrite=request.POST.get('rewrite')
-        
+        rewrite=request.POST.get('rewrite',' ')
         kwargs={
             'id':pid,
             'vhost':vhost,
             'rewrite':rewrite,
-        }
+        }  
         try: 
             _update_project=QueryUpdate(**kwargs).update_project()
             msg={'resultCode':u'200','data':_update_project,'info': u'更新成功'}
@@ -92,23 +126,22 @@ def project_delete(request):
     项目删除
     """
     if not request.user.has_perm('home_application.can_del_project'):
-        return render(request, '403.html')
-
+        return render(request, '403.html') 
 
     if request.method == 'GET':
         pid=request.GET.get('id')
         project_info=QueryGet().select_project_conf(id=pid)
-        for field in project_info:
-            fields1='vhost'
-            fields2='rewrite'
-            token=field['gid_id__token']
-            domain=field['domain'] 
-        
+        fields1='vhost'
+        fields2='rewrite' 
+        token=project_info[0]['gid_id__token']
+        domain=project_info[0]['domain'] 
         vhostKeys=('/%s/%s/%s' %(token,fields1,domain))
         rewriteKeys=('/%s/%s/%s' %(token,fields2,domain))
       
         try:
+            print('11111')
             delVhost=etcdClient().delKey(vhostKeys) 
+            print('delete etcd key')
         except Exception:
             msg={'info':'Vhost key不存在'}
         try:
@@ -243,7 +276,8 @@ def user_authorize(request):
         is_exist_permission=AccountQueryget(**kwargs).select_exist_permission()
     except Exception:
         is_exist_permission='None'
-    print(is_exist_permission)
+  
+ 
     #重组数据结构
     role_dic=dict()
     for d in role:
@@ -252,7 +286,7 @@ def user_authorize(request):
         else:          
             role_dic[d['groups__name']]+=','
             role_dic[d['groups__name']]+=d['username']
-    
+
     new_role=[]
     for k,v in role_dic.items():
         new_role.append({'groups__name':k,'username':v}) 
@@ -267,3 +301,15 @@ def user_authorize(request):
 
     msg={'role':new_role,'user':user,'permission':json.dumps(permission_list)}
     return render_mako_context(request, '/home_application/permission.htm',{'msg':msg}) 
+
+def user_authorize_edit(request):
+    """
+    编辑用户组
+    """
+    groupname=request.GET.get('name')
+    
+    if 'None' not in groupname:
+        kwargs={'groupname':groupname}
+        userList=AccountQueryget(**kwargs).select_user()
+    msg={'groupname':groupname,'users':userList}
+    return render_mako_context(request, '/home_application/permission-edit.htm',{'msg':msg}) 

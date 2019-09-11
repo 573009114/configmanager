@@ -31,6 +31,7 @@ urlpatterns += patterns(
     '',
     url(r'^cache/other$', 'home_application.views.clear_cache'),
     url(r'^user/authorize$', 'home_application.views.user_authorize'),
+    url(r'^user/authorize/edit$', 'home_application.views.user_authorize_edit'),
 )
 
 urlpatterns += patterns(
@@ -45,6 +46,6 @@ urlpatterns += patterns(
     (r'^api/v1/cache/yun$', 'home_application.api.yuncdn_cache_api'), 
     (r'^api/v1/user/group/$', 'home_application.api.role_group_api'),
     (r'^api/v1/user/group/del$', 'home_application.api.role_group_del_api'),
+    (r'^api/v1/user/group/edit$', 'home_application.api.role_group_save_api'), 
     (r'^api/v1/user/group/permission$', 'home_application.api.role_group_permission_api'),
-    
 )

@@ -4,7 +4,7 @@ import etcd
 
 class etcdClient:
     def __init__(self):
-        self.client=etcd.Client(host='10.52.15.200', port=4001)
+        self.client=etcd.Client(host='10.52.11.128', port=4001)
 
     def viewValue(self,keyName):
         try:

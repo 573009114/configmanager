@@ -75,9 +75,9 @@
 										<td>${pro['gid_id__name']}</td>
 										<td>${pro['gid_id__token']}</td>
 										<td>
-											<a id="${pro['id']}" onclick="push_project(event)" class="btn-w-m btn-link"><i class="fa fa-exchange"></i> 推送 &#160 &#160 &#160</a>
+										    <a data-id="${pro['id']}" class="btn-w-m btn-link x-push" ><i class="fa fa-exchange"></i>推送 &#160 &#160 &#160</a>
 											<a href="${SITE_URL}project-list/edit?id=${pro['id']}" class="btn-w-m btn-link"><i class="fa fa-pencil"></i> 编辑 &#160 &#160 &#160 </a>
-											<a id="${pro['id']}" onclick="del(event)"  class="btn-w-m btn-link" ><i class="fa fa-warning"></i> 删除 </a>
+										    <a data-id="${pro['id']}" class="btn-w-m btn-link x-delete"><i class="fa fa-warning"></i> 删除 </a>
 										 
 										</td>
 									</tr>
@@ -158,8 +158,8 @@
 							<div class="form-group"> 
 								<input class="form-control" type="text" placeholder="域名" name="domain" style="width:20%;float:left" required="required" onkeyup="this.value=this.value.replace(/\s+/g,'')"> 
 								<select class="form-control" name="domain-id" style="width:80%;float:left"> 
-									 <option value="1">.a.com.cn</option>
-									 <option value="2">.b.com</option>
+									 <option value="1">.xcar.com.cn</option>
+									 <option value="2">.xcarimg.com</option>
 								</select>  
                              </div>
 							  
@@ -200,62 +200,62 @@
  
     <script type="text/javascript">
             // 项目推送	
-				function push_project(e){
-						layer.confirm('确定要推送吗？', {
-						btn: ['确定','取消'] //按钮
-						}, function(){
-						var id = e.target.id ; 
-						$.ajax({
-							url: "${SITE_URL}api/v1/project/push",
-							type: "POST",
-							dataType: "json",
-							data:{'pid':id},
-							success:function(result){
-								console.log(result);
-								if (result.resultCode == 200){  
-									layer.msg(result.info,{icon: 1});
+			 $('.x-push').on('click', function(){
+			     var pid = $(this).attr("data-id") ;
+				 console.log(pid);
+				 layer.confirm('确定要推送吗？', {
+						btn: ['确定','取消']
+						},function(index){
+						  layer.close(index);
+						  $.ajax({
+						     url: "${SITE_URL}api/v1/project/push",
+							 type: "POST",
+							 dataType: "json",
+							 data:{'pid':pid},
+						     success:function(result){
+							     if (result.resultCode == 200){
+								    layer.msg(result.info,{icon: 1});
 									setTimeout("window.parent.location.reload();",100);
-									}
-								else{
-									layer.msg(result.info, {icon: 2});
-									} 
-							},
-						}); 
+								 }
+								 else{
+								     layer.msg(result.info, {icon: 2});
+								 } 
+							 },
+						  });
 						}, function(){
-						layer.msg('取消操作', {
-							time: 500
-						});
-						});
-					}
-	
+						    layer.msg('取消操作', {
+							time: 500});
+							});
+				}) 
 	
 			//删除
-				function del(e){
-						layer.confirm('确定要删除吗？', {
-						btn: ['确定','取消'] //按钮
-						}, function(){
-						var id = e.target.id ; 
-						$.ajax({
-							url: "${SITE_URL}project-list/del?id="+id,
-							type: "GET",
-							dataType: "json",
-							success:function(result){
-								console.log(result);
-								if (result.resultCode == '200'){  
-									layer.msg('完成',{icon: 1});
+			    $('.x-delete').on('click', function(){
+			     var pid = $(this).attr("data-id") ;
+				 console.log(pid);
+				 layer.confirm('确定要删除吗？', {
+						btn: ['确定','取消']
+						},function(index){
+						  layer.close(index);
+						  $.ajax({
+						     url: "${SITE_URL}project-list/del?id="+pid,
+							 type: "GET",
+							 dataType: "json", 
+						     success:function(result){
+							     if (result.resultCode == 200){
+								    layer.msg(result.info,{icon: 1});
 									setTimeout("window.parent.location.reload();",100);
-									}
-								else{
-									layer.msg('操作失败', {icon: 2});
-									} 
-							},
-						}); 
+								 }
+								 else{
+								     layer.msg(result.info, {icon: 2});
+								 } 
+							 },
+						  });
 						}, function(){
-						layer.msg('取消操作', {
-							time: 500
-						});
-						});
-					}
+						    layer.msg('取消操作', {
+							time: 500});
+							});
+				}) 
+			 
  
                 $('#modal1Btn').on('click', function(){
 				    $.ajax({

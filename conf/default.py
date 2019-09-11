@@ -138,9 +138,9 @@ PYTHON_BIN = os.path.dirname(sys.executable)
 
 
 # 设置跨域token
-CORS_ORIGIN_WHITELIST = [
-   'http://localhost:80',
-]
+# CORS_ORIGIN_WHITELIST = [
+#    'http://localhost:80',
+# ]
 
 # ===============================================================================
 # 静态资源设置

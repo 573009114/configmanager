@@ -113,13 +113,13 @@
 						<div class="modal-body">  
 							<div class="form-group">
 								<label for="name">业务组名</label>
-								<input class="form-control" type="text" placeholder="分组名" name="group-name" required="required" oninput="setCustomValidity('');" oninvalid="setCustomValidity('业务组名不能为空')">
+								<input class="form-control" type="text" placeholder="分组名" name="group-name" id="group_notNULL">
 							</div>
 							 
 						 
 							<div class="form-group">
 								<label for="name">业务类型</label>
-								<select class="form-control" name="service-type">
+								<select class="form-control" name="service-type" id='select_notNULL'>
 									<option value="">选择业务类型</option>
 									<option value="api">API代理</option>
 									<option value="inside">内部服务</option>
@@ -149,8 +149,8 @@
 						<div class="modal-body">  
 							<div class="form-group">
 								<label for="name">业务组</label>
-								<select class="form-control" name="service-room-id">
-									<option value="">选择业务组</option>
+								<select class="form-control" name="service-room-id" id='room_notNULL' >
+									    <option value="">选择业务组</option>
 								 
 							            % for group in msg['group']:
 									    <option value="${group['id']}">${group['name']}</option>
@@ -160,7 +160,8 @@
 						    
 							 <div>
 								<label for="name">关联IP</label>
-								<select name="ipaddr" xm-select-search xm-select-type="2" xm-select="select16" xm-select-skin="danger" >
+								<select name="ipaddr" xm-select-search xm-select-type="2" xm-select="select16" xm-select-skin="danger">
+								            <option value="">选择绑定IP</option>
                                        	    % for i in msg['iplist']:				
 										    <option value="${i}">${i}</option>
                                  			% endfor							
@@ -190,51 +191,64 @@
 	<script src="${STATIC_URL}js/csrftoken.js"></script>
 	<script src="${STATIC_URL}backend/js/plugins/layer/layer.min.js"></script> 
 	<script type="text/javascript"> 
-			    $('#modal1Btn').on('click', function(){
-				    $.ajax({
-					    type: "POST",
-						dataType: "json",
-						url: "${SITE_URL}api/v1/group/",
-						async: true,
-						data: $('#modal1').serialize(),
-						success: function (result) {
-						    if (result.resultCode == 200) {
-							    layer.msg(result.info); 
-								setTimeout("window.parent.location.reload();",100);							    
-							}
-							else{
-							    layer.msg(result.info);
-							};
-						},
-						error: function() {						
-							 layer.msg(result.info); 
-						 }
-					});
-				})
-			
-	 
+			    $("#modal1Btn").on("click", function(){ 
+				    var input_name= $("#group_notNULL").val().length;
+                    var select_name= $("#select_notNULL").val().length;
+					if (input_name == 0 || select_name== 0 ){
+					    layer.msg("输入不能为空");
+					}
+					else{ 
+						$.ajax({
+							type: "POST",
+							dataType: "json",
+							url: "${SITE_URL}api/v1/group/",
+							async: true,
+							data: $('#modal1').serialize(),
+							success: function (result) {
+								if (result.resultCode == 200) {
+									layer.msg(result.info); 
+									setTimeout("window.parent.location.reload();",100);							    
+								}
+								else{
+									layer.msg(result.info);
+								};
+							},
+							error: function() {						
+								 layer.msg(result.info); 
+							 }
+						});
+						} 
+					}) 
 				
 				$('#modal3Btn').on('click', function(){
-				    $.ajax({
-					    type: "POST",
-						dataType: "json",
-						url: "${SITE_URL}api/v1/ip/",
-						async: true,
-						data: $('#modal3').serialize(),
-						success: function (result) {
-						    if (result.resultCode == 200) {
-							    layer.msg(result.info); 
-								setTimeout("window.parent.location.reload();",100);							    
-							}
-							else{
-							    layer.msg(result.info);
-							};
-						},
-						error: function() {						
-							 layer.msg(result.info); 
-						 }
-					});
-				})
+				    var room_name= $("#room_notNULL").val().length;
+				
+				 
+				    if (room_name == 0){
+						layer.msg("输入不能为空");
+					}
+					else{ 
+						$.ajax({
+							type: "POST",
+							dataType: "json",
+							url: "${SITE_URL}api/v1/ip/",
+							async: true,
+							data: $('#modal3').serialize(),
+							success: function (result) {
+								if (result.resultCode == 200) {
+									layer.msg(result.info); 
+									setTimeout("window.parent.location.reload();",100);							    
+								}
+								else{
+									layer.msg(result.info);
+								};
+							},
+							error: function() {						
+								 layer.msg(result.info); 
+							 }
+						});
+						}
+					})
 				
 				
 				function del(e){

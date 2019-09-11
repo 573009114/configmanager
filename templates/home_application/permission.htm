@@ -27,7 +27,7 @@
 
 <%block name="content"> 
 
-
+ 
 <div class="wrapper wrapper-content animated fadeIn">
         <div class="row">
             <div class="col-sm-12">
@@ -48,7 +48,7 @@
 												<div class="col-sm-12"> 
 													
 													    <div class="clearfix layer-area"   style="float:right">	
-															<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#role">新增角色组</button> 
+															<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#role">新增角色组</button>														
 														</div>
 														<form method="post" action="##"  id='form_group'>
 														<table class="table table-hover">
@@ -61,14 +61,29 @@
 															</thead>
 															<tbody>
 																% for u in msg['role']:
+																    % if u['groups__name'] == None: 
 																<tr>
 																	<td>${u['groups__name']}</td>
 																	<td>${u['username']}</td> 
-																	<td>
-																		<a id="${u['groups__name']}" onclick="sub_del(event)"  class="btn-w-m btn-link" >
-																		<i class="fa fa-warning"></i> 删除</a>
-																	</td> 														
+																	<td> 
+																		<a href="#"><i class="fa fa-pencil"></i>
+																		</a>
+ 																		<a><i class="fa fa-trash-o" id="${u['groups__name']}" onclick="sub_del(event)" ></i>
+																		</a>
+ 																	</td> 														
 																</tr>
+																    % else:
+																	<tr>
+																	<td>${u['groups__name']}</td>
+																	<td>${u['username']}</td> 
+																	<td> 
+																		<a href="${SITE_URL}user/authorize/edit?name=${u['groups__name']}"><i class="fa fa-pencil"></i>
+																		</a>
+ 																		<a><i class="fa fa-trash-o" id="${u['groups__name']}" onclick="sub_del(event)" ></i>
+																		</a>
+ 																	</td> 														
+																</tr>
+																    % endif
 																% endfor 
 															</tbody>
 														</table> 
@@ -91,8 +106,10 @@
 																<label for="name">角色组</label>
 																<select class="form-control" name="role-group" id="selectbox" style="WIDTH:300px;">
 																	    <option value="">选择角色组</option> 
-																     	% for u in msg['role']:
-																		<option value="${u['groups__name']}">${u['groups__name']}</option> 
+																     	% for u in msg['role']: 
+																		    % if u['groups__name'] != None:
+																		    <option value="${u['groups__name']}">${u['groups__name']}</option> 
+																			% endif
 																		% endfor
 																</select> 
 															</div>	 
@@ -113,6 +130,7 @@
             </div>
         </div>
     </div>
+ 
 	
 	<!-- MODAL 1 -->
 	<div class="modal inmodal" id="role" tabindex="-1" role="dialog" aria-hidden="true">
@@ -121,7 +139,7 @@
 				<div class="modal-content animated flipInY">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
-						<h4 class="modal-title">新建用户组</h4>                       
+						<h4 class="modal-title">新建角色组</h4>                       
 					</div>
 					<div class="modal-body">
 						 <div class="form-group">
@@ -229,9 +247,9 @@
 							 layer.msg(result.info); 
 						 }
 					});
-				})
+				}) 
 				
-			
+	 
 				function sub_del(e){
 						layer.confirm('确定要删除吗？', {
 						btn: ['确定','取消'] //按钮
@@ -259,10 +277,8 @@
 							time: 500
 						});
 						});
-					}
-				
-	    </script>
-		
+					} 
+	    </script> 
 	</%block> 	
 	 
 </%block> 
